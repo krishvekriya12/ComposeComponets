@@ -1,7 +1,10 @@
 package com.shreekrishna.composecomponets.LightButton
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,16 +12,30 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,51 +52,34 @@ fun DiscordLightButton() {
         val isPressed by interactionSource.collectIsPressedAsState()
         val isHovered by interactionSource.collectIsHoveredAsState()
 
-        // Android me press, Desktop me hover
         val isActive = isPressed || isHovered
 
         val discordColor = Color(0xFF5865F2)
         val backgroundColor = Color(0xFF0A0A0A)
         val defaultColor = Color(0xFF0F0F0F)
 
-        // Smooth color animation with spring effect
         val animatedColor by animateColorAsState(
-            targetValue = if (isActive) discordColor else defaultColor,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
-            ),
-            label = "color"
+            targetValue = if (isActive) discordColor else defaultColor, animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
+            ), label = "color"
         )
 
-        // Smooth outline offset with spring
         val animatedOutlineOffset by animateDpAsState(
-            targetValue = if (isActive) 2.dp else 20.dp,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
-            ),
-            label = "offset"
+            targetValue = if (isActive) 2.dp else 20.dp, animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium
+            ), label = "offset"
         )
 
-        // Light intensity animation
         val lightIntensity by animateFloatAsState(
-            targetValue = if (isActive) 1f else 0f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioLowBouncy,
-                stiffness = Spring.StiffnessMedium
-            ),
-            label = "light"
+            targetValue = if (isActive) 1f else 0f, animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMedium
+            ), label = "light"
         )
 
-        // Button scale animation (subtle bounce)
         val buttonScale by animateFloatAsState(
-            targetValue = if (isActive) 1.05f else 1f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
-            ),
-            label = "scale"
+            targetValue = if (isActive) 1.05f else 1f, animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium
+            ), label = "scale"
         )
 
         Box(
@@ -87,11 +87,8 @@ fun DiscordLightButton() {
                 .height(200.dp)
                 .width(270.dp)
                 .clickable(
-                    interactionSource = interactionSource,
-                    indication = null
-                ) { }
-        ) {
-            // Light beam effect (Triangle gradient) - Behind button
+                    interactionSource = interactionSource, indication = null
+                ) { }) {
             Canvas(
                 modifier = Modifier
                     .width(1000.dp)
@@ -112,15 +109,11 @@ fun DiscordLightButton() {
                             discordColor.copy(alpha = 0.4f * lightIntensity),
                             discordColor.copy(alpha = 0.1f * lightIntensity),
                             Color.White.copy(alpha = 0f)
-                        ),
-                        startY = 0f,
-                        endY = size.height * 0.8f
+                        ), startY = 0f, endY = size.height * 0.8f
                     )
 
                     drawPath(
-                        path = path,
-                        brush = brush,
-                        style = Fill
+                        path = path, brush = brush, style = Fill
                     )
                 }
             }
@@ -134,25 +127,20 @@ fun DiscordLightButton() {
                     .align(Alignment.TopCenter)
             )
 
-            // Button Holder at bottom with scale animation
             Box(
                 modifier = Modifier
                     .size((100 * buttonScale).dp)
                     .align(Alignment.BottomCenter)
                     .background(backgroundColor, RoundedCornerShape(5.dp))
                     .border(
-                        width = 2.dp,
-                        color = animatedColor,
-                        shape = RoundedCornerShape(5.dp)
-                    ),
-                contentAlignment = Alignment.Center
+                        width = 2.dp, color = animatedColor, shape = RoundedCornerShape(5.dp)
+                    ), contentAlignment = Alignment.Center
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    // Discord SVG Logo
                     Canvas(modifier = Modifier.size(50.dp)) {
                         val paint = Paint().asFrameworkPaint().apply {
                             isAntiAlias = true
