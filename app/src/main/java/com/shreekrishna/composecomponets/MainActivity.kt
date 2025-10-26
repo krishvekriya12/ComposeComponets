@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.shreekrishna.composecomponets.Material3ExpresiveLoadingIndiCator.ExpressiveLoadingIndicator
 import com.shreekrishna.composecomponets.Custom_Buttons.GradientButton
 
 class MainActivity : ComponentActivity() {
@@ -28,7 +29,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            DemoScreen()
+            MaterialTheme {
+                ExpressiveLoadingIndicator()
+            }
         }
     }
 }
